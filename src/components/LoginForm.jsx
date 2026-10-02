@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { loginUser } from '../services/authService';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 function LoginForm() {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
         setLoading(true);
@@ -14,6 +16,8 @@ function LoginForm() {
         try {
             const data = await loginUser(name, password);
             console.log('Login successful:', data);
+            localStorage.setItem('loggedInUserName', name);
+            navigate('/dashboard');
         } catch (error) {
             setError(error.message);
         } finally {

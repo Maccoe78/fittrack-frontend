@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { registerUser } from '../services/authService'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 function RegisterForm() {
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
 
     const handleRegister = async () => {
         setLoading(true)
@@ -14,6 +15,7 @@ function RegisterForm() {
         try {
             await registerUser(name, password)
             console.log('Registration successful')
+            navigate('/login')
         } catch (error) {
             setError(error.message)
         } finally {
