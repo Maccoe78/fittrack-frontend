@@ -17,6 +17,7 @@ function LoginForm() {
             const data = await loginUser(name, password);
             console.log('Login successful:', data);
             localStorage.setItem('loggedInUserName', name);
+            localStorage.setItem('loggedInUserId', data.id);
             navigate('/dashboard');
         } catch (error) {
             setError(error.message);
