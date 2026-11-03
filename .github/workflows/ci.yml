@@ -1,0 +1,92 @@
+name: Frontend CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Lint and build Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check for local backend URLs
+        run: |
+          if grep -R -n "localhost:8081" src; then
+            echo "Frontend source still contains localhost:8081"
+            exit 1
+          fi
+
+      - name: Build Docker image
+        run: docker build -t fittrack-frontend:${GITHUB_SHA} .
+
+      - name: Save image for deployment
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker save fittrack-frontend:${GITHUB_SHA} -o fittrack-frontend.tar
+
+      - name: Upload image artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: fittrack-frontend-image
+          path: fittrack-frontend.tar
+          retention-days: 1
+
+  deploy:
+    name: Deploy frontend to EduCloud
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, linux, x64, educloud]
+
+    steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: fittrack-frontend-image
+
+      - name: Load Docker image
+        run: docker load -i fittrack-frontend.tar
+
+      - name: Replace frontend container
+        run: |
+          docker rm -f fittrack-frontend || true
+          docker run -d \
+            --name fittrack-frontend \
+            --restart unless-stopped \
+            --network fittrack_default \
+            -p 80:80 \
+            fittrack-frontend:${GITHUB_SHA}
+
+      - name: Verify deployment
+        run: |
+          for i in {1..15}; do
+            if curl -fsS http://127.0.0.1/ >/dev/null &&
+               curl -fsS http://127.0.0.1/api/users >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs fittrack-frontend
+          exit 1
