@@ -1,6 +1,8 @@
+const API_URL = import.meta.env.VITE_API_URL ?? '/api';
+
 async function createDietPlan(dietData) {
     try {
-        const response = await fetch('http://localhost:8081/diets', {
+        const response = await fetch(`${API_URL}/diets`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -21,7 +23,7 @@ async function createDietPlan(dietData) {
 }
 
 async function getDietPlanByUserId(userId) {
-    const response = await fetch(`http://localhost:8081/diets/user/${userId}`, {
+    const response = await fetch(`${API_URL}/diets/user/${userId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
