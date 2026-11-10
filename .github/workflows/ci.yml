@@ -82,11 +82,17 @@ jobs:
       - name: Verify deployment
         run: |
           for i in {1..15}; do
-            if curl -fsS http://127.0.0.1/ >/dev/null &&
-               curl -fsS http://127.0.0.1/api/users >/dev/null; then
+            frontend_status=$(curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1/ || true)
+            api_status=$(curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1/api/users || true)
+
+            if [ "$frontend_status" = "200" ] && [ "$api_status" = "401" ]; then
+              echo "Frontend is bereikbaar; API vereist authenticatie."
               exit 0
             fi
+
+            echo "Nog niet klaar: frontend=$frontend_status, api=$api_status"
             sleep 2
           done
+
           docker logs fittrack-frontend
           exit 1
