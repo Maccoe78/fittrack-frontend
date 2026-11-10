@@ -1,6 +1,15 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 function Sidebar() {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        sessionStorage.removeItem('token');
+        localStorage.removeItem('loggedInUserId');
+        localStorage.removeItem('loggedInUserName');
+        navigate('/login', { replace: true });
+    };
+
     const linkClass = ({ isActive }) =>
         [
             'flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition',
@@ -40,6 +49,14 @@ function Sidebar() {
                     {localStorage.getItem('loggedInUserName') || 'User'}
                 </div>
                 <div className="text-xs">Premium Member</div>
+
+                <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="mt-4 w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white"
+                >
+                    Log out
+                </button>
             </div>
         </aside>
     );

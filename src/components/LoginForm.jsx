@@ -15,8 +15,13 @@ function LoginForm() {
         setError('');
         try {
             const data = await loginUser(name, password);
-            console.log('Login successful:', data);
-            localStorage.setItem('loggedInUserName', name);
+
+            if (!data.token) {
+                throw new Error('Login response contains no token');
+            }
+
+            sessionStorage.setItem('token', data.token);
+            localStorage.setItem('loggedInUserName', data.name);
             localStorage.setItem('loggedInUserId', data.id);
             navigate('/dashboard');
         } catch (error) {
