@@ -19,7 +19,7 @@ function Sidebar() {
         ].join(' ');
 
     return (
-        <aside className="flex h-full w-[260px] flex-col border-r border-white/10 bg-[#12151d] px-6 py-6">
+        <aside className="flex min-h-screen w-[260px] flex-col border-r border-white/10 bg-[#12151d] px-6 py-6">
             <div>
                 <h2 className="text-3xl font-extrabold tracking-tight text-white">
                     Fit<span className="text-lime-400">Track</span>
@@ -39,21 +39,20 @@ function Sidebar() {
                     <span>Training Logs</span>
                 </button>
 
-                <button className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white">
-                    <span>Profile</span>
-                </button>
+                <NavLink to="/profile" className={linkClass}>
+                   <span>Profile</span>
+                </NavLink>
             </nav>
 
             <div className="mt-auto border-t border-white/10 pt-6 text-sm text-slate-400">
                 <div className="font-medium text-white">
                     {localStorage.getItem('loggedInUserName') || 'User'}
                 </div>
-                <div className="text-xs">Premium Member</div>
 
                 <button
                     type="button"
                     onClick={handleLogout}
-                    className="mt-4 w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:bg-white/5 hover:text-white"
+                    className="mt-4 w-full rounded-2xl bg-red-700 px-4 py-3 text-left text-sm font-medium text-white transition hover:bg-red-800"
                 >
                     Log out
                 </button>

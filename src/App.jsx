@@ -4,6 +4,7 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import CreateDietPage from './pages/CreateDietPage'
 import DietLogPage from './pages/DietLogPage'
+import ProfilePage from './pages/ProfilePage'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/create-diet" element={<CreateDietPage />} />
       <Route path="/diet-log" element={<DietLogPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
     </Routes>
   )
 }
